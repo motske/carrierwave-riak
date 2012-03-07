@@ -200,7 +200,6 @@ module CarrierWave
       # [CarrierWave::Storage::Riak::File] the stored file
       #
       def store!(file)
-        Rails.logger.debug("STORE")
         f = CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, uploader.key)
         f.store(file)
         f
@@ -217,12 +216,10 @@ module CarrierWave
       # [CarrierWave::Storage::Riak::File] the stored file
       #
       def retrieve!(key)
-        Rails.logger.debug("RETRIEVE")
         CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, key)
       end
 
       def identifier
-        Rails.logger.debug("in identifier key=#{uploader.key}")
         uploader.key
       end
 
