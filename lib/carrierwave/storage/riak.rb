@@ -27,7 +27,7 @@ module CarrierWave
           bucket = @client.bucket(bucket)
           robject = ::Riak::RObject.new(bucket, key)
           robject.content_type = headers[:content_type]
-          robject.data = payload
+          robject.raw_data = payload
           robject.store
         end
 
