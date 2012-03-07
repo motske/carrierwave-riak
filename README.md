@@ -2,7 +2,7 @@
 
 This gem adds storage support for [Riak](http://wiki.basho.com/Riak.html) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
-It should work for basic uploads, but hasn't been tested with all features of carrirwave.  The code was initially based
+It should work for basic uploads, but hasn't been tested with all features of carrierrwave and is very new.  The code was initially based
 on [carrierwave-upyun](https://github.com/nowa/carrierwave-upyun) but also uses ideas taken from the built in Fog storage provider.
 
 ## Installation
@@ -12,7 +12,7 @@ on [carrierwave-upyun](https://github.com/nowa/carrierwave-upyun) but also uses 
 ## Or using Bundler, in `Gemfile`
 
     gem 'riak-client'
-    gem 'carrierwave-riak'
+    gem 'carrierwave-riak', :require => "carrierwave/riak"
 
 ## Configuration
 
@@ -51,3 +51,11 @@ Because the orm record is saved before the storage object is, the orm record nee
 saving to storage if a Riak generated key is to be used as the identifier.  The CarrierWave::Uploader::Riak
 class defines an :after callback to facilitate this.  This only works for ActiveRecord and is likely pretty
 hacky.  Maybe someone can suggest a better way to deal with this.
+
+## TODO ###
+
+- Write specs.  Bad programmer.
+
+### Contributing ###
+
+If
