@@ -2,6 +2,9 @@
 
 This gem adds storage support for [Riak](http://wiki.basho.com/Riak.html) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
+It should work for basic uploads, but hasn't been tested with all features of carrirwave.  The code was initially based
+on [carrierwave-upyun](https://github.com/nowa/carrierwave-upyun) but also uses ideas taken from the built in Fog storage provider.
+
 ## Installation
 
     gem install carrierwave-riak
