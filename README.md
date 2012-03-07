@@ -56,6 +56,6 @@ hacky.  Maybe someone can suggest a better way to deal with this.
 
 - Write specs.  Bad programmer.
 
-### Contributing ###
+## Contributing ##
 
-If
+If this is helpful to you, but isn't quite working for you please send me pull requests.
