@@ -5,3 +5,4 @@ CarrierWave.configure do |config|
 end
 
 CarrierWave::Uploader::Base.send(:include, CarrierWave::Riak::Configuration)
+require "carrierwave/uploader/riak"

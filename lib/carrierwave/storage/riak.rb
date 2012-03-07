@@ -8,7 +8,6 @@ module CarrierWave
     ##
     #
     #     CarrierWave.configure do |config|
-    #       config.riak_bucket = "my_bucket"
     #       config.riak_host = "http://localhost
     #       config.riak_port = 8098
     #     end
@@ -24,22 +23,22 @@ module CarrierWave
           @client = ::Riak::Client.new(:host => @host, :http_port => @port)
         end
 
-        def store(path, payload, headers = {})
-          bucket = @client.bucket(@riak_bucket)
-          robject = ::Riak::RObject.new(bucket, path)
+        def store(bucket, key, payload, headers = {})
+          bucket = @client.bucket(bucket)
+          robject = ::Riak::RObject.new(bucket, key)
           robject.content_type = headers[:content_type]
           robject.data = payload
           robject.store
-          puts "key = #{robject.key}"
         end
 
-        def get(path)
-          bucket = client.bucket(@riak_bucket)
-          bucket.get(path)
+        def get(bucket, key)
+          bucket = @client.bucket(bucket)
+          bucket.get(key)
         end
 
-        def delete(path, headers = {})
-          @http["#{escaped(path)}"].delete(headers)
+        def delete(bucket, key)
+          bucket = @client.bucket(bucket)
+          bucket.delete(key)
         end
 
         def post(path, payload, headers = {})
@@ -53,40 +52,85 @@ module CarrierWave
 
       class File
 
-        def initialize(uploader, base, path)
+        def initialize(uploader, base, bucket, key)
           @uploader = uploader
-          @path = path
+          @bucket = bucket
+          @key = key
           @base = base
         end
 
         ##
-        # Returns the current path/filename of the file on Cloud Files.
+        # Returns the key of the riak file
         #
         # === Returns
         #
-        # [String] A path
+        # [String] A filename
         #
-        def path
-          @path
+        def key
+          @key
         end
 
         ##
-        # Reads the contents of the file from Cloud Files
+        # Lookup value for file content-type header
+        #
+        # === Returns
+        #
+        # [String] value of content-type
+        #
+        def content_type
+          @content_type || file.content_type
+        end
+
+        ##
+        # Set non-default content-type header (default is file.content_type)
+        #
+        # === Returns
+        #
+        # [String] returns new content type value
+        #
+        def content_type=(new_content_type)
+          @content_type = new_content_type
+        end
+
+        ##
+        # Return riak meta data
+        #
+        # === Returns
+        #
+        # [Haash] A hash of X-Riak-Meta-* headers
+        #
+        def meta
+          file.meta
+        end
+
+        ##
+        # Return size of file body
+        #
+        # === Returns
+        #
+        # [Integer] size of file body
+        #
+        def size
+          file.raw_data.length
+        end
+
+        ##
+        # Reads the contents of the file from Riak
         #
         # === Returns
         #
         # [String] contents of the file
         #
         def read
-          riak_client.get(@path)
+          file.raw_data
         end
 
         ##
-        # Remove the file from Cloud Files
+        # Remove the file from Riak
         #
         def delete
           begin
-            uy_connection.delete(@path)
+            riak_client.delete(@bucket, @key)
             true
           rescue Exception => e
             # If the file's not there, don't panic
@@ -95,31 +139,16 @@ module CarrierWave
         end
 
         ##
-        # Returns the url on the Cloud Files CDN.  Note that the parent container must be marked as
-        # public for this to work.
-        #
-        # === Returns
-        #
-        # [String] file's url
-        #
-        def url
-          if @uploader.upyun_bucket_domain
-            "http://" + @uploader.upyun_bucket_domain + '/' + @path
-          else
-            nil
-          end
-        end
-
-        ##
-        # Writes the supplied data into the riak db
+        # Writes the supplied data into Riak
         #
         # === Returns
         #
         # boolean
         #
-        def store(data,headers={})
-          puts "about to store riak file with data #{data}"
-          riak_client.store(@path, data, headers)
+        def store(file)
+          @file = riak_client.store(@bucket, @key, file.read, {:content_type => file.content_type})
+          @key = @file.key
+          @uploader.key = @key
           true
         end
 
@@ -131,6 +160,17 @@ module CarrierWave
 
           def connection
             @base.connection
+          end
+
+          ##
+          # lookup file
+          #
+          # === Returns
+          #
+          # [Riak::RObject] file data from remote service
+          #
+          def file
+            @file ||= riak_client.get(@bucket, @key)
           end
 
           def riak_client
@@ -149,7 +189,7 @@ module CarrierWave
       end
 
       ##
-      # Store the file on UpYun
+      # Store the file on Riak
       #
       # === Parameters
       #
@@ -160,9 +200,9 @@ module CarrierWave
       # [CarrierWave::Storage::Riak::File] the stored file
       #
       def store!(file)
-        riak_options = {:content_type => file.content_type}
-        f = CarrierWave::Storage::Riak::File.new(uploader, self, uploader.store_path)
-        f.store(file.read, riak_options)
+        Rails.logger.debug("STORE")
+        f = CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, uploader.key)
+        f.store(file)
         f
       end
 
@@ -176,10 +216,15 @@ module CarrierWave
       #
       # [CarrierWave::Storage::Riak::File] the stored file
       #
-      def retrieve!(identifier)
-        CarrierWave::Storage::Riak::File.new(uploader, self, uploader.store_path(identifier))
+      def retrieve!(key)
+        Rails.logger.debug("RETRIEVE")
+        CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, key)
       end
 
+      def identifier
+        Rails.logger.debug("in identifier key=#{uploader.key}")
+        uploader.key
+      end
 
     end # CloudFiles
   end # Storage
