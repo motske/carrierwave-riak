@@ -26,6 +26,18 @@ CarrierWave.configure do |config|
 end
 ```
 
+or, if you use claster of nodes
+
+```ruby
+CarrierWave.configure do |config|
+  config.storage = :riak
+  config.riak_nodes = [
+    { host: "127.0.0.1", http_port: 8098 }, 
+    { host: "127.0.0.1", http_port: 8099 }
+  ]
+end
+```
+
 ## Usage example
 
 Note that for your uploader, your should extend the CarrierWave::Uploader::Riak class.

@@ -6,6 +6,7 @@ module CarrierWave
         add_config :riak_bucket
         add_config :riak_host
         add_config :riak_port
+        add_config :riak_nodes
       end
     end
 

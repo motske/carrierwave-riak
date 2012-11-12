@@ -17,10 +17,7 @@ module CarrierWave
 
       class Connection
         def initialize(options={})
-          @riak_bucket = options[:riak_bucket]
-          @host = options[:riak_host]
-          @port = options[:riak_port]
-          @client = ::Riak::Client.new(:host => @host, :http_port => @port)
+          @client = ::Riak::Client.new(options)
         end
 
         def store(bucket, key, payload, headers = {})
@@ -177,12 +174,15 @@ module CarrierWave
             if @riak_client
               @riak_client
             else
-              config = {
-                :riak_bucket => @uploader.riak_bucket,
-                :riak_host => @uploader.riak_host,
-                :riak_port => @uploader.riak_port
-              }
-              @riak_client ||= CarrierWave::Storage::Riak::Connection.new(config)
+              @riak_client ||= CarrierWave::Storage::Riak::Connection.new(riak_options)
+            end
+          end
+
+          def riak_options
+            if @uploader.respond_to? :riak_nodes
+              {:nodes => @uploader.riak_nodes}
+            else
+              {:host => @uploader.riak_host, :http_port => @uploader.riak_port}
             end
           end
 
