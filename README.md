@@ -16,7 +16,7 @@ on [carrierwave-upyun](https://github.com/nowa/carrierwave-upyun) but also uses 
 
 ## Configuration
 
-You'll need to configure the Riak client in config/initializes/carrierwave.rb
+You'll need to configure the Riak client in config/initializers/carrierwave.rb
 
 ```ruby
 CarrierWave.configure do |config|
