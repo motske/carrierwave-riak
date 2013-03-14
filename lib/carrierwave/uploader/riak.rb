@@ -19,6 +19,10 @@ module CarrierWave
         end
       end
 
+      def inspect
+        "#<#{self.class.name} key=#{key.inspect} bucket=#{bucket.inspect}>"
+      end
+
       private
 
       def build_versioned_key(key, version_name)
