@@ -179,7 +179,7 @@ module CarrierWave
           end
 
           def riak_options
-            if @uploader.respond_to? :riak_nodes
+            if @uploader.riak_nodes
               {:nodes => @uploader.riak_nodes}
             else
               {:host => @uploader.riak_host, :http_port => @uploader.riak_port}
