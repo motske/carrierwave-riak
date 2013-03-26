@@ -10,7 +10,7 @@ require 'carrierwave'
 require 'carrierwave/orm/activerecord'
 require 'carrierwave/processing/mini_magick'
 
-ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
 load File.expand_path('../support/schema.rb', __FILE__)
 
@@ -37,8 +37,7 @@ RSpec.configure do |config|
   config.order = :random
 
   config.after :suite do
-    FileUtils.rmdir(File.expand_path('../../uploads/tmp', __FILE__))
-    FileUtils.rmdir(File.expand_path('../../uploads',     __FILE__))
+    FileUtils.rm_rf(File.expand_path('../../uploads',     __FILE__))
   end
 
 end
