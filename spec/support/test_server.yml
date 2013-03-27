@@ -1,0 +1,2 @@
+source: /usr/local/Cellar/riak/1.2.0-x86_64/libexec/bin
+root:  spec/test_server/

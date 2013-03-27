@@ -57,6 +57,18 @@ class DocumentUploader < CarrierWave::Uploader::Riak
 end
 ```
 
+By default CarrierWave-Riak will not keep a cached copy of the uploaded files on the file system. If you prefer to override this you can in your Uploader.
+
+```ruby
+class DocumentUploader < CarrierWave::Uploader::Riak
+
+    def move_to_store
+        false
+    end
+
+end
+```
+
 ### Using Riak generated keys ###
 
 Because the orm record is saved before the storage object is, the orm record needs to be updated after
