@@ -10,6 +10,7 @@ require 'carrierwave'
 require 'carrierwave/orm/activerecord'
 require 'carrierwave/processing/mini_magick'
 require 'riak/test_server'
+require 'yaml'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
@@ -38,17 +39,22 @@ RSpec.configure do |config|
   config.order = :random
 
   config.before :suite do
-    test_server = Riak::TestServer.create(
-      {:source => '/usr/local/Cellar/riak/1.2.0-x86_64/libexec/bin',
-       :root   => Pathname.new(File.expand_path('../riak_test', __FILE__))
-      }
-    ) 
-    test_server.start
+    unless $test_server
+      begin
+        config = YAML.load_file('spec/support/test_server.yml')
+        test_server = Riak::TestServer.create(config.symbolize_keys)
+        test_server.start
+      rescue => e
+        warn "Can't run Riak::TestServer specs. Specify the location of your Riak installation in 'spec/support/test_server.yml. See warning e.inspect"
+        puts e.inspect
+        test_server = nil
+      end
+    end
   end
 
   config.after :suite do
     FileUtils.rm_rf(File.expand_path('../../uploads',     __FILE__))
-    FileUtils.rm_rf(File.expand_path('../riak_test', __FILE__))
+    FileUtils.rm_rf(File.expand_path('../test_server', __FILE__))
   end
 
 end
