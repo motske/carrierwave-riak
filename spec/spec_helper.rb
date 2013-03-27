@@ -9,6 +9,7 @@ require 'active_record'
 require 'carrierwave'
 require 'carrierwave/orm/activerecord'
 require 'carrierwave/processing/mini_magick'
+require 'riak/test_server'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
@@ -36,8 +37,18 @@ RSpec.configure do |config|
 
   config.order = :random
 
+  config.before :suite do
+    test_server = Riak::TestServer.create(
+      {:source => '/usr/local/Cellar/riak/1.2.0-x86_64/libexec/bin',
+       :root   => Pathname.new(File.expand_path('../riak_test', __FILE__))
+      }
+    ) 
+    test_server.start
+  end
+
   config.after :suite do
     FileUtils.rm_rf(File.expand_path('../../uploads',     __FILE__))
+    FileUtils.rm_rf(File.expand_path('../riak_test', __FILE__))
   end
 
 end
