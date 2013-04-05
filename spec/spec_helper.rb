@@ -11,6 +11,7 @@ require 'carrierwave/orm/activerecord'
 require 'carrierwave/processing/mini_magick'
 require 'riak/test_server'
 require 'yaml'
+require 'pry'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
@@ -30,8 +31,9 @@ end
 
 CarrierWave.configure do |config|
   config.storage = :riak
-  config.riak_bucket = "rspec"
-  config.riak_host = "localhost"
+  config.riak_nodes = [
+    { :host => "127.0.0.1", :http_port => 8080 }
+  ]
 end
 
 RSpec.configure do |config|
