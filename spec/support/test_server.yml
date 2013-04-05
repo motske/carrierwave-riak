@@ -1,3 +1,8 @@
 source: /usr/local/Cellar/riak/1.2.0-x86_64/libexec/bin
 root:  spec/test_server/
-
+:env: 
+  :riak_core:
+    :http:
+      -
+        - "127.0.0.1"
+        - 9000 

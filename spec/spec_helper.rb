@@ -32,7 +32,7 @@ end
 CarrierWave.configure do |config|
   config.storage = :riak
   config.riak_nodes = [
-    { :host => "127.0.0.1", :http_port => 8080 }
+    { :host => "127.0.0.1", :http_port => 9000 }
   ]
 end
 
