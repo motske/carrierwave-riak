@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "carrierwave"
-  s.add_dependency "riak-client", "~> 1.0"
+  s.add_dependency "riak-client", "~> 1.0", "<= 1.4.1"
 
   s.add_development_dependency "rails", "~> 3.0"
   s.add_development_dependency "rspec", "~> 2.13"
