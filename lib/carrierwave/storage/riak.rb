@@ -68,6 +68,17 @@ module CarrierWave
         end
 
         ##
+        # Returns the path of the riak file
+        #
+        # === Returns
+        #
+        # [String] A full path to file
+        #
+        def path
+          Pathname.new('/').join(@bucket).join(key).to_s
+        end
+
+        ##
         # Lookup value for file content-type header
         #
         # === Returns
