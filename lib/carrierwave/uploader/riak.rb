@@ -9,18 +9,20 @@ module CarrierWave
 
       storage :riak
 
-      if defined?(Rails)
+      if defined?(ActiveRecord)
         after :store, :updatemodel
 
         def updatemodel(file)
-          if model.read_attribute(:"#{self.mounted_as}").nil? || model.read_attribute(:"#{self.mounted_as}") != self.key
-            model.update_attribute(:"#{self.mounted_as}", self.key)
-          end
+          model[mounted_as] ||= key if model.is_a?(::ActiveRecord::Base)
         end
       end
 
       def inspect
         "#<#{self.class.name} key=#{key.inspect} bucket=#{bucket.inspect}>"
+      end
+
+      def move_to_store
+        true
       end
 
       private
@@ -59,6 +61,7 @@ module CarrierWave
         versions.each { |name, v|
           v.retrieve_from_store!(build_versioned_key(identifier, name)) }
       end
+
     end
   end
 end

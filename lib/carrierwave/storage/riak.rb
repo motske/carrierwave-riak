@@ -211,9 +211,10 @@ module CarrierWave
       # [CarrierWave::Storage::Riak::File] the stored file
       #
       def store!(file)
-        f = CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, uploader.key)
-        f.store(file)
-        f
+        CarrierWave::Storage::Riak::File.new(uploader, self, uploader.bucket, uploader.key).tap do |f|
+          f.store(file)
+          remove_cached_file(file) if uploader.move_to_store
+        end
       end
 
       # Do something to retrieve the file
@@ -232,6 +233,12 @@ module CarrierWave
 
       def identifier
         uploader.key
+      end
+
+      private
+
+      def remove_cached_file(file)
+        FileUtils.rm_rf(file.path)
       end
 
     end # CloudFiles

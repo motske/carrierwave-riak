@@ -1,0 +1,12 @@
+source: /usr/local/Cellar/riak/1.2.0-x86_64/libexec/bin
+root: /tmp/carrierwave-riak-test-server/
+:env: 
+  :riak_core:
+    :handoff_port: 9002
+    :http:
+      -
+        - "127.0.0.1"
+        - 9000
+  :riak_kv:
+    :pb_port: 9003
+
